@@ -1,6 +1,6 @@
 const User = require("../models/User");
-const userHelper = require("../helpers/userHelper");
-const userService = require("../services/userService");
+const userHelper = require("../helpers/authHelper");
+const userService = require("../services/authService");
 
 // Sign up
 exports.signUp = async (req, res, next) => {
@@ -22,3 +22,13 @@ exports.signUp = async (req, res, next) => {
 };
 
 // Log in
+exports.login = async (req, res, next) => {
+    const { username, password } = req.body;
+    try {
+        const result = await userService.login(res, username, password);
+        res.json(result);
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+};

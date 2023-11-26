@@ -11,3 +11,9 @@ exports.signUpSchema = Joi.object({
     username: Joi.string().min(3).max(30).required(),
     password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{8,30}$")),
 });
+
+// Login validation:
+exports.loginSchema = Joi.object({
+    username: Joi.string().required(),
+    password: Joi.string().required(),
+});
