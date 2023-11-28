@@ -8,6 +8,7 @@ const { signUpSchema, loginSchema } = require("../validations/userValidation");
 // Sign up router:
 router.post("/sign-up", validateBody(signUpSchema), authController.signUp);
 
+// Log in router:
 router.post("/login", validateBody(loginSchema), authController.login);
 
 module.exports = router;
