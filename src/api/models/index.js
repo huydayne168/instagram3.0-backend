@@ -5,8 +5,11 @@ const ChatUser = require("./ChatUser");
 const Comment = require("./Comment");
 const Like = require("./Like");
 const Photo = require("./Photo");
+const Notification = require("./Notification");
+const Story = require("./Story");
 
 /////////// All associations here:
+
 // User and Post:
 User.hasMany(Post);
 Post.belongsTo(User, {
@@ -47,6 +50,18 @@ Comment.belongsTo(User, {
 // This will create the 'user_followers' table ...(wait to done this comment after check the result in postgreSQL)
 User.belongsToMany(User, { as: "follower_id", through: "user_follower" });
 
+// User and Notification:
+User.hasMany(Notification);
+Notification.belongsTo(User, {
+    foreignKey: "user_id",
+});
+
+// User and Story:
+User.hasMany(Story);
+Story.belongsTo(User, {
+    foreignKey: "user_id",
+});
+
 // Post and Photo:
 Post.hasMany(Photo);
 Photo.belongsTo(Post, {
@@ -69,4 +84,10 @@ Like.belongsTo(Post, {
 Chat.hasMany(Message);
 Message.hasOne(Chat, {
     foreignKey: "chat_id",
+});
+
+// Story and Photo:
+Story.hasMany(Photo);
+Photo.belongsTo(Story, {
+    foreignKey: "story_id",
 });

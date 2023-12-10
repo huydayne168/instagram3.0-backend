@@ -6,6 +6,9 @@ const Photo = sequelize.define("photo", {
         type: DataTypes.STRING(999),
         allowNull: false,
     },
+    type: {
+        type: DataTypes.ENUM(["video", "image"]),
+    },
 });
 
 module.exports = Photo;
