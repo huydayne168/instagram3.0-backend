@@ -1,14 +1,36 @@
-const sequelize = require("../../configs/db");
-const { DataTypes } = require("sequelize");
+const { required } = require("joi");
+const mongoose = require("mongoose");
 
-const Post = sequelize.define("post", {
-    title: {
-        type: DataTypes.STRING(9999),
+const { Schema } = mongoose;
+
+const postSchema = new Schema(
+    {
+        caption: {
+            type: String,
+            required: false,
+        },
+        userId: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: "User",
+        },
+        photoVideo: [
+            {
+                type: Schema.Types.ObjectId,
+                require: true,
+                ref: "PhotoVideo",
+            },
+        ],
+        likesCount: {
+            type: Number,
+            required: false,
+        },
     },
-    date: {
-        type: DataTypes.DATE,
-        allowNull: false,
-    },
-});
+    {
+        timestamps: true,
+    }
+);
+
+const Post = mongoose.model("Post", postSchema);
 
 module.exports = Post;

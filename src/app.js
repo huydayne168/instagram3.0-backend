@@ -1,18 +1,20 @@
+const { env } = require("process");
 require("dotenv").config();
 
+const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8000;
-const sequelize = require("./configs/db");
-const credential = require("./api/middlewares/credentials");
+const sequelize = require("./api/models/index");
 const cors = require("cors");
-const corsOptions = require("./configs/allowOrigins");
+const credentials = require("./api/middlewares/credentials");
+const corsOptions = require("./configs/cors");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const { bodyParserUrlencodedConfigs } = require("./configs/bodyParser");
 const router = require("./api/routes/index");
 
-app.use(credential);
+app.use(credentials);
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(bodyParser.json({ limit: "35mb" }));
@@ -29,7 +31,20 @@ app.use((error, req, res, next) => {
     res.status(status).json({ message: message });
 });
 
-// server listen:
-app.listen(PORT, () => {
-    console.log("I am running in " + PORT);
-});
+mongoose
+    .connect(env.MONGODB_URI)
+    .then((res) => {
+        const server = app.listen(PORT, () => {
+            console.log(">>>>>>>>>I AM RUNNING IN PORT:" + PORT + "<<<<<<<<<");
+        });
+        // const io = require("./socketio").init(server);
+        // io.on("connection", (socket) => {
+        //     console.log("Client connected!");
+        //     socket.on("sendMess", (data) => {
+        //         socket.broadcast.emit("receiveMess", data);
+        //     });
+        // });
+    })
+    .catch((err) => {
+        console.log(err);
+    });

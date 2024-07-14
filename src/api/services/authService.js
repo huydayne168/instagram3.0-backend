@@ -1,18 +1,21 @@
 const { StatusCodes } = require("http-status-codes");
-const User = require("../models/User");
 const {
     comparePassword,
     generateAccessToken,
     generateRefreshToken,
+    storeRefreshTokenToCookie,
 } = require("../helpers/authHelper");
-const { createUser, findAnUser } = require("../sequelize/userSequelize");
+const jwt = require("jsonwebtoken");
+const { env } = require("process");
+require("dotenv").config();
+const userQuery = require("../mongooseQuery/userQuery");
 
 // Sign up service:
-exports.signUp = async (username, password, email, full_name) => {
+exports.signUp = async (username, password, email, fullName) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const existedEmail = await findAnUser({ email });
-            const existedUsername = await findAnUser({ username });
+            const existedEmail = await userQuery.findAnUser({ email });
+            const existedUsername = await userQuery.findAnUser({ username });
 
             if (existedEmail) {
                 reject({
@@ -25,12 +28,12 @@ exports.signUp = async (username, password, email, full_name) => {
                     message: "username",
                 });
             } else {
-                const newUser = await createUser(
-                    email,
-                    full_name,
+                const newUser = await userQuery.createUser({
                     username,
-                    password
-                );
+                    email,
+                    password,
+                    fullName,
+                });
                 resolve({
                     status: StatusCodes.CREATED,
                     data: newUser,
@@ -48,40 +51,101 @@ exports.signUp = async (username, password, email, full_name) => {
 // Login service:
 exports.login = (res, username, password) => {
     return new Promise(async (resolve, reject) => {
-        // find the user:
-        const user = await findAnUser({ username });
-        if (!user) {
-            reject({
-                status: StatusCodes.UNAUTHORIZED,
-                message: "username",
-            });
-        } else {
-            const matchPassword = await comparePassword(
-                password,
-                user.password
-            );
-
-            if (!matchPassword) {
+        // find the username:
+        try {
+            const user = await userQuery.findAnUser({ username });
+            if (!user) {
                 reject({
                     status: StatusCodes.UNAUTHORIZED,
-                    message: "password",
+                    message: "wrong username!",
                 });
             } else {
-                const accessToken = generateAccessToken(user);
-                const refreshToken = generateRefreshToken(user);
-                // store refresh token in cookie:
-                res.cookie("jwt", refreshToken, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: "None",
-                    maxAge: 24 * 60 * 60 * 1000,
+                const matchPassword = await comparePassword(
+                    password,
+                    user.password
+                );
+
+                if (!matchPassword) {
+                    reject({
+                        status: StatusCodes.UNAUTHORIZED,
+                        message: "wrong password!",
+                    });
+                } else {
+                    // clear old refresh token
+                    user.refreshToken = null;
+                    const accessToken = generateAccessToken(user);
+                    const refreshToken = generateRefreshToken(user);
+                    console.log(refreshToken);
+                    // store refresh token in cookie:
+                    storeRefreshTokenToCookie(res, refreshToken, {
+                        httpOnly: true,
+                        secure: true,
+                        sameSite: "None",
+                        maxAge: 24 * 60 * 60 * 1000 * 30, // 30 days
+                    });
+                    // Store user's refresh token
+                    // await userQuery.updateAnUser({ ...user }, { refreshToken });
+                    user.refreshToken = refreshToken;
+                    await user.save();
+
+                    resolve({
+                        userInfo: user,
+                        accessToken: accessToken,
+                    });
+                }
+            }
+        } catch (error) {
+            reject({
+                status: StatusCodes.INTERNAL_SERVER_ERROR,
+                message: "Error to get all users!",
+            });
+        }
+    });
+};
+
+// Refresh access token:
+exports.refreshAccessToken = (refreshToken) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!refreshToken) {
+                reject({
+                    status: StatusCodes.UNAUTHORIZED,
+                    message: "Unauthorized!!!",
+                });
+            } else {
+                const user = await userQuery.findAnUser({
+                    refreshToken,
                 });
 
-                resolve({
-                    userInfo: user,
-                    accessToken: accessToken,
-                });
+                if (!user)
+                    reject({
+                        status: StatusCodes.FORBIDDEN,
+                        message: "Forbidden!",
+                    });
+                jwt.verify(
+                    refreshToken,
+                    env.REFRESH_TOKEN_CODE,
+                    (error, decoded) => {
+                        if (
+                            error ||
+                            decoded.userInfo.username !== user.username
+                        )
+                            reject({
+                                status: StatusCodes.FORBIDDEN,
+                                message: "Forbidden!",
+                            });
+
+                        const newAccessToken = generateAccessToken(user);
+                        resolve({
+                            status: StatusCodes.CREATED,
+                            message: "Created!",
+                            newAccessToken,
+                        });
+                    }
+                );
             }
+        } catch (error) {
+            reject(error);
         }
     });
 };

@@ -17,14 +17,16 @@ exports.comparePassword = (p1, p2) => {
 exports.generateAccessToken = (userInfo) => {
     const accessToken = jwt.sign(
         {
-            userInfo,
+            userInfo: {
+                username: userInfo.username,
+                id: userInfo.id,
+            },
         },
         env.ACCESS_TOKEN_CODE,
         {
             expiresIn: "60m",
         }
     );
-
     return accessToken;
 };
 
@@ -32,7 +34,10 @@ exports.generateAccessToken = (userInfo) => {
 exports.generateRefreshToken = (userInfo) => {
     const refreshToken = jwt.sign(
         {
-            userInfo,
+            userInfo: {
+                username: userInfo.username,
+                id: userInfo.id,
+            },
         },
         env.REFRESH_TOKEN_CODE,
         {
@@ -40,4 +45,9 @@ exports.generateRefreshToken = (userInfo) => {
         }
     );
     return refreshToken;
+};
+
+// store refresh token to cookie:
+exports.storeRefreshTokenToCookie = (res, refreshToken, cookieConfigs) => {
+    res.cookie("jwt", refreshToken, cookieConfigs);
 };

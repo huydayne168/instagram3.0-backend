@@ -1,17 +1,16 @@
-const User = require("../models/User");
-const userHelper = require("../helpers/authHelper");
-const userService = require("../services/authService");
+const authHelper = require("../helpers/authHelper");
+const authService = require("../services/authService");
 
 // Sign up
 exports.signUp = async (req, res, next) => {
-    const { username, password, email, full_name } = req.body;
+    const { username, password, email, fullName } = req.body;
     try {
-        const hashedPassword = await userHelper.hashPassword(password);
-        const result = await userService.signUp(
+        const hashedPassword = await authHelper.hashPassword(password);
+        const result = await authService.signUp(
             username,
             hashedPassword,
             email,
-            full_name
+            fullName
         );
         console.log(result);
         res.json(result);
@@ -25,10 +24,33 @@ exports.signUp = async (req, res, next) => {
 exports.login = async (req, res, next) => {
     const { username, password } = req.body;
     try {
-        const result = await userService.login(res, username, password);
-        res.json(result);
+        const result = await authService.login(res, username, password);
+
+        // Remember current user:
+        req.currentUser = {
+            id: result.userInfo.id,
+            username: result.userInfo.username,
+        };
+
+        res.json({
+            userInfo: result.userInfo,
+            accessToken: result.accessToken,
+        });
     } catch (error) {
         console.log(error);
+        next(error);
+    }
+};
+
+// refresh access token:
+exports.refreshAccessToken = async (req, res, next) => {
+    const cookies = req.cookies;
+    const refreshToken = cookies.jwt;
+    try {
+        const result = await authService.refreshAccessToken(refreshToken);
+        res.json(result);
+    } catch (error) {
+        console.log(error, "Error to get new access token!");
         next(error);
     }
 };

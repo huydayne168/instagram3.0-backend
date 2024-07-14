@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 
-exports.validateBody = (schema) => (req, res, next) => {
-    console.log(req.body);
+exports.validateReqBody = (schema) => (req, res, next) => {
+    // console.log(req.body);
     const validationResult = schema.validate(req.body);
     if (validationResult.error) {
         console.log(validationResult.error, ">>>>>>>>>>>> Error validate body");

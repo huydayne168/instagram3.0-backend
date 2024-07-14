@@ -1,14 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
-const { validateBody } = require("../middlewares/validate");
-const { signUpSchema, loginSchema } = require("../validations/userValidation");
+const { validateReqBody } = require("../middlewares/validateReqBody");
+const { signUpSchema, loginSchema } = require("../validations/authValidation");
 
 ///////// user routers:
 // Sign up router:
-router.post("/sign-up", validateBody(signUpSchema), authController.signUp);
+router.post("/sign-up", validateReqBody(signUpSchema), authController.signUp);
 
 // Log in router:
-router.post("/login", validateBody(loginSchema), authController.login);
+router.post("/login", validateReqBody(loginSchema), authController.login);
+
+// Refresh Access Token:
+router.get("/refresh-access-token", authController.refreshAccessToken);
 
 module.exports = router;
