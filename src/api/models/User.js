@@ -26,6 +26,13 @@ const userSchema = new Schema(
         avatar: {
             type: String,
         },
+        followers: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "User",
+                require: false,
+            },
+        ],
         refreshToken: String,
     },
     {

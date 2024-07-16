@@ -1,24 +1,27 @@
-const { required } = require("joi");
 const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
-const postSchema = new Schema(
+const commentSchema = new Schema(
     {
-        caption: {
-            type: String,
-            required: false,
+        postId: {
+            type: Schema.Types.ObjectId,
+            ref: "Post",
+            required: true,
         },
         userId: {
             type: Schema.Types.ObjectId,
-            required: true,
             ref: "User",
+            required: true,
         },
-        photoVideo: [
+        content: {
+            type: String,
+            required: true,
+        },
+        replies: [
             {
                 type: Schema.Types.ObjectId,
-                require: true,
-                ref: "PhotoVideo",
+                ref: "Comment",
             },
         ],
         likes: [
@@ -33,6 +36,6 @@ const postSchema = new Schema(
     }
 );
 
-const Post = mongoose.model("Post", postSchema);
+const Comment = mongoose.model("Comment", commentSchema);
 
-module.exports = Post;
+module.exports = Comment;
