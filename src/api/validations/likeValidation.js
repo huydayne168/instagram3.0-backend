@@ -4,4 +4,4 @@ const Joi = require("joi");
 exports.likeValidation = Joi.object({
     postId: Joi.string().allow(null),
     commentId: Joi.string().allow(null),
-}).xor("postId", "commentId");
+});

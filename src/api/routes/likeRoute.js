@@ -1,5 +1,8 @@
 const express = require("express");
-const { createLike, deleteLike } = require("../mongooseQuery/likeQuery");
+const {
+    createLikePost,
+    deleteLikePost,
+} = require("../controllers/likeController");
 const { verifyJWT } = require("../middlewares/verifyJWT");
 const { validateReqBody } = require("../middlewares/validateReqBody");
 const { likeValidation } = require("../validations/likeValidation");
@@ -8,18 +11,18 @@ const router = express.Router();
 
 // Create Like:
 router.post(
-    "/create-like",
+    "/create-like-post",
     verifyJWT,
     validateReqBody(likeValidation),
-    createLike
+    createLikePost
 );
 
 // Delete Like:
 router.delete(
-    "/delete-like",
+    "/delete-like-post",
     verifyJWT,
     validateReqBody(likeValidation),
-    deleteLike
+    deleteLikePost
 );
 
 module.exports = router;

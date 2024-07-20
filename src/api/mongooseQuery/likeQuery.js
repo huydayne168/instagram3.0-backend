@@ -1,11 +1,11 @@
 const Like = require("../models/like");
 
 // Create Like:
-exports.createLike = (currentUserId, postId, commentId) => {
-    return Like.create({ userId: currentUserId, postId, commentId });
+exports.createLikePost = (currentUserId, postId) => {
+    return Like.create({ userId: currentUserId, postId: postId });
 };
 
 // Delete Like:
-exports.deleteLike = (currentUserId, postId, commentId) => {
-    return Like.findOneAndDelete({ userId: currentUserId, postId, commentId });
+exports.deleteLikePost = (currentUserId, postId) => {
+    return Like.findOneAndDelete({ userId: currentUserId, postId });
 };

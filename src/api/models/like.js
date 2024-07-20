@@ -1,23 +1,20 @@
-const { ref } = require("joi");
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const likeSchema = new Schema(
     {
-        postId: {
-            type: Schema.Types.ObjectId,
-            ref: "Post",
-            required: false,
-        },
         userId: {
             type: Schema.Types.ObjectId,
             ref: "User",
             required: true,
         },
+        postId: {
+            type: Schema.Types.ObjectId,
+            ref: "Post",
+        },
         commentId: {
             type: Schema.Types.ObjectId,
             ref: "Comment",
-            required: false,
         },
     },
     {

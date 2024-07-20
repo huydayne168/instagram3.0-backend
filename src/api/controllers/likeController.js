@@ -1,15 +1,11 @@
 const likeService = require("../services/likeService");
 
 // Create Like:
-exports.createLike = async (req, res, next) => {
+exports.createLikePost = async (req, res, next) => {
     try {
         const currentUserId = req.currentUser.id;
-        const { postId, commentId } = req.body;
-        const result = await likeService.createLike(
-            currentUserId,
-            postId,
-            commentId
-        );
+        const { postId } = req.body;
+        const result = await likeService.createLikePost(currentUserId, postId);
         return res.status(result.status).json(result);
     } catch (error) {
         next(error);
@@ -17,15 +13,11 @@ exports.createLike = async (req, res, next) => {
 };
 
 // Delete Like:
-exports.deleteLike = async (req, res, next) => {
+exports.deleteLikePost = async (req, res, next) => {
     try {
         const currentUserId = req.currentUser.id;
-        const { postId, commentId } = req.body;
-        const result = await likeService.deleteLike(
-            currentUserId,
-            postId,
-            commentId
-        );
+        const { postId } = req.body;
+        const result = await likeService.deleteLikePost(currentUserId, postId);
         return res.status(result.status).json(result);
     } catch (error) {
         next(error);
