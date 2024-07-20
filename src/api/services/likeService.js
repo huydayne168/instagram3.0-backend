@@ -7,10 +7,16 @@ exports.createLikePost = (currentUserId, postId) => {
     return new Promise(async (resolve, reject) => {
         try {
             const post = await postQuery.findAPost(postId);
+            const isLiked = await likeQuery.findLikePost(currentUserId, postId);
             if (!post) {
                 reject({
                     status: StatusCodes.NOT_FOUND,
                     message: "post not found!",
+                });
+            } else if (isLiked) {
+                reject({
+                    status: StatusCodes.BAD_REQUEST,
+                    message: "you've already liked this post!",
                 });
             } else {
                 const like = await likeQuery.createLikePost(

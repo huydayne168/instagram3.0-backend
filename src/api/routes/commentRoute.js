@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { createComment } = require("../mongooseQuery/commentQuery");
+const { createComment } = require("../controllers/commentController");
 const { verifyJWT } = require("../middlewares/verifyJWT");
 const { validateReqBody } = require("../middlewares/validateReqBody");
 const { createCommentValidation } = require("../validations/commentValidation");

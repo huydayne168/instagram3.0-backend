@@ -35,10 +35,14 @@ exports.createPost = async (videoPhotoList, caption, user_id) => {
 
             newPost.photoVideo = photoVideoIdList;
             await newPost.save();
+            // const newPostDetail = await newPost
+            //     .populate("photoVideo")
+            //     .populate("userId");
 
             resolve({
                 status: StatusCodes.CREATED,
                 message: "success!",
+                post: newPost,
             });
         } catch (error) {
             console.log(error);
