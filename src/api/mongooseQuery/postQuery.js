@@ -33,6 +33,23 @@ const updatePost = (postId, data) => {
     return Post.findByIdAndUpdate(postId, data, { new: true });
 };
 
+// Delete Like from Post:
+const deleteLikeFromPost = async (post, likeId) => {
+    try {
+        console.log(post, likeId);
+        const index = post.likes.indexOf(likeId);
+        if (index > -1) {
+            post.likes.splice(index, 1);
+        }
+        await post.save();
+    } catch (error) {
+        console.log(error);
+        throw {
+            message: "Error to delete like from post!",
+        };
+    }
+};
+
 // exports:
 module.exports = {
     createPost,
@@ -40,4 +57,5 @@ module.exports = {
     getFollowingPosts,
     findAPost,
     updatePost,
+    deleteLikeFromPost,
 };

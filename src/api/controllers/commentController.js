@@ -15,3 +15,13 @@ exports.createComment = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.getComments = async (req, res, next) => {
+    try {
+        const { postId } = req.query;
+        const result = await commentService.getComments(postId);
+        return res.status(result.status).json(result);
+    } catch (error) {
+        next(error);
+    }
+};

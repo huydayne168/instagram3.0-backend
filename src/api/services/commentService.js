@@ -38,3 +38,31 @@ exports.createComment = async (postId, currentUserId, content) => {
         }
     });
 };
+
+// Get Comments:
+exports.getComments = async (postId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log(postId);
+            const post = await postQuery.findAPost(postId);
+            if (!post) {
+                reject({
+                    status: StatusCodes.NOT_FOUND,
+                    message: "Post not found!",
+                });
+            } else {
+                const comments = await commentQuery.getComments(postId);
+                resolve({
+                    comments,
+                    status: StatusCodes.OK,
+                    message: "Comments found!",
+                });
+            }
+        } catch (error) {
+            reject({
+                status: StatusCodes.INTERNAL_SERVER_ERROR,
+                message: "Something wrong, can not get comments!",
+            });
+        }
+    });
+};

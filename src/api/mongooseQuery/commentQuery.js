@@ -4,3 +4,8 @@ const Comment = require("../models/comment");
 exports.createComment = (postId, currentUserId, content) => {
     return Comment.create({ postId, userId: currentUserId, content });
 };
+
+// Get Comments:
+exports.getComments = (postId) => {
+    return Comment.find({ postId }).populate("userId").sort({ createdAt: -1 });
+};

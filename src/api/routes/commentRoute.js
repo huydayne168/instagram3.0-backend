@@ -1,5 +1,8 @@
 const { Router } = require("express");
-const { createComment } = require("../controllers/commentController");
+const {
+    createComment,
+    getComments,
+} = require("../controllers/commentController");
 const { verifyJWT } = require("../middlewares/verifyJWT");
 const { validateReqBody } = require("../middlewares/validateReqBody");
 const { createCommentValidation } = require("../validations/commentValidation");
@@ -13,5 +16,8 @@ router.post(
     validateReqBody(createCommentValidation),
     createComment
 );
+
+// Get Comments:
+router.get("/get-comments", getComments);
 
 module.exports = router;
