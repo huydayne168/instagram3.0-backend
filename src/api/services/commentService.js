@@ -24,8 +24,11 @@ exports.createComment = async (postId, currentUserId, content) => {
                 post.comments.push(comment._id);
                 await post.save();
 
+                const commentDetail = await commentQuery.findAComment(
+                    comment._id
+                );
                 resolve({
-                    comment,
+                    comment: commentDetail,
                     status: StatusCodes.CREATED,
                     message: "Comment created!",
                 });

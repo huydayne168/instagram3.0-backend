@@ -9,3 +9,8 @@ exports.createComment = (postId, currentUserId, content) => {
 exports.getComments = (postId) => {
     return Comment.find({ postId }).populate("userId").sort({ createdAt: -1 });
 };
+
+// Find a Comment:
+exports.findAComment = (commentId) => {
+    return Comment.findById(commentId).populate("userId");
+};
