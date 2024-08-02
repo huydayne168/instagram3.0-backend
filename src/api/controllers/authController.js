@@ -42,6 +42,19 @@ exports.login = async (req, res, next) => {
     }
 };
 
+// Log out:
+exports.logout = async (req, res, next) => {
+    const { username } = req.body;
+    req.currentUser = null;
+    try {
+        const result = await authService.logout(res, username);
+        res.json(result);
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+};
+
 // refresh access token:
 exports.refreshAccessToken = async (req, res, next) => {
     const cookies = req.cookies;

@@ -103,6 +103,34 @@ exports.login = (res, username, password) => {
     });
 };
 
+// Logout service:
+exports.logout = (res, username) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await userQuery.findAnUser({ username });
+            // user.refreshToken = null;
+            // await user.save();
+            storeRefreshTokenToCookie(res, "", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "None",
+                maxAge: 0,
+            });
+
+            resolve({
+                status: StatusCodes.OK,
+                message: "Logout successfully!",
+            });
+        } catch (error) {
+            console.log(error);
+            reject({
+                status: StatusCodes.INTERNAL_SERVER_ERROR,
+                message: "Error to logout!",
+            });
+        }
+    });
+};
+
 // Refresh access token:
 exports.refreshAccessToken = (refreshToken) => {
     return new Promise(async (resolve, reject) => {

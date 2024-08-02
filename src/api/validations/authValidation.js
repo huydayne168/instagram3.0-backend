@@ -18,3 +18,8 @@ exports.loginSchema = Joi.object({
     username: Joi.string().required(),
     password: Joi.string().required(),
 });
+
+// Logout validation:
+exports.logoutSchema = Joi.object({
+    username: Joi.string().required(),
+});
